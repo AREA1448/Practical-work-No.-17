@@ -1,0 +1,97 @@
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+#include <cstdlib>
+#include <ctime>
+
+using namespace std;
+
+struct Point {
+    double x;
+    double y;
+};
+
+double distance(const Point& p1, const Point& p2) {
+    return sqrt(pow(p2.x - p1.x, 2) + pow(p2.y - p1.y, 2));
+}
+
+double calculateRectangleArea(Point* points, int size) {
+    if (size != 4) {
+        cout << "Error: A rectangle must have exactly 4 vertices!" << endl;
+        return 0.0;
+    }
+
+    double side1 = distance(points[0], points[1]);  // AB
+    double side2 = distance(points[1], points[2]);  // BC
+    double side3 = distance(points[2], points[3]);  // CD
+    double side4 = distance(points[3], points[0]);  // DA
+
+    if (abs(side1 - side3) > 1e-6 || abs(side2 - side4) > 1e-6) {
+        cout << "Warning: The figure is not a rectangle (the sides are not equal)!" << endl;
+    }
+
+    double area = side1 * side2;
+    return area;
+}
+
+void inputPointsManually(Point* points) {
+    cout << "\nEnter the coordinates of the 4 vertices of the rectangle:\n";
+    for (int i = 0; i < 4; i++) {
+        cout << "Point " << i + 1 << " (x y): ";
+        while (!(cin >> points[i].x >> points[i].y)) {
+            cout << "Incorrect input! Enter two numbers separated by a space-+-: ";
+            cin.clear();
+            cin.ignore(10000, '\n');
+        }
+    }
+}
+
+void generateRandomPoints(Point* points) {
+    cout << "\nRandom coordinate generation...\n";
+    for (int i = 0; i < 4; i++) {
+        points[i].x = (rand() % 200 - 50) / 2.0;  // від -25.0 до 75.0
+        points[i].y = (rand() % 200 - 50) / 2.0;
+    }
+    
+    cout << "Generated points:\n";
+    for (int i = 0; i < 4; i++) {
+        cout << "Point " << i + 1 << ": (" 
+             << fixed << setprecision(2) << points[i].x << ", " 
+             << points[i].y << ")\n";
+    }
+}
+
+int main() {
+    srand(time(nullptr)); 
+
+    Point* points = new Point[4];  
+    int choice;
+
+    cout << "=== Calculating the area of a rectangle ===\n";
+    cout << "1. Enter coordinates manually\n";
+    cout << "2. Generate random coordinates\n";
+    cout << "Your choice: ";
+    cin >> choice;
+
+    if (choice == 1) {
+        inputPointsManually(points);
+    } 
+    else if (choice == 2) {
+        generateRandomPoints(points);
+    } 
+    else {
+        cout << "Wrong choice! The program is terminating.\n";
+        delete[] points;
+        return 1;
+    }
+
+    double area = calculateRectangleArea(points, 4);
+
+    cout << "\n=====================================" << endl;
+    cout << fixed << setprecision(4);
+    cout << "Area of a rectangle = " << area << " square units" << endl;
+    cout << "=====================================" << endl;
+
+    delete[] points; 
+    return 0;
+}
